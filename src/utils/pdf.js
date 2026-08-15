@@ -1,5 +1,19 @@
 import { jsPDF } from 'jspdf';
 
+// jsPDF's standard fonts (Helvetica, Times) do not support Unicode characters like ₹ and π.
+// Passing them causes incorrect width calculations leading to huge letter spacing in PDF viewers.
+const sanitizeText = (str) => {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/₹/g, 'Rs. ')
+    .replace(/π/g, 'pi')
+    .replace(/[\u2018\u2019]/g, "'") // smart single quotes
+    .replace(/[\u201C\u201D]/g, '"') // smart double quotes
+    .replace(/\u2013|\u2014/g, '-') // en dash, em dash
+    .replace(/\u2026/g, '...') // ellipsis
+    .replace(/[^\x00-\xFF]/g, '?'); // replace other unsupported characters
+};
+
 export const generateQuestionPaperPDF = (questions, settings) => {
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -36,13 +50,11 @@ export const generateQuestionPaperPDF = (questions, settings) => {
     doc.setFontSize(fontSize);
     doc.setFont(fontName, isBold ? 'bold' : 'normal');
     
+    const sanitized = sanitizeText(text);
     const targetWidth = customWidth || (textColWidth - indent);
-    const lines = doc.splitTextToSize(text, targetWidth);
+    const lines = doc.splitTextToSize(sanitized, targetWidth);
     const lineHeight = fontSize * 0.4;
     
-    const startY = yPos;
-    let tempY = startY;
-
     for (let i = 0; i < lines.length; i++) {
       checkPageBreak(lineHeight);
       
@@ -56,6 +68,20 @@ export const generateQuestionPaperPDF = (questions, settings) => {
   };
 
   // Header Section
+  if (settings.logo) {
+    try {
+      const imgProps = doc.getImageProperties(settings.logo);
+      const logoHeight = 20;
+      const logoWidth = (imgProps.width / imgProps.height) * logoHeight;
+      const xPos = isClassic ? (pageWidth - logoWidth) / 2 : margin;
+      
+      doc.addImage(settings.logo, imgProps.fileType, xPos, yPos, logoWidth, logoHeight);
+      yPos += logoHeight + 5;
+    } catch (e) {
+      console.error("Failed to add logo to PDF", e);
+    }
+  }
+
   if (settings.institutionName) {
     addText(settings.institutionName.toUpperCase(), 16, true, isClassic ? 'center' : 'left');
     yPos += 5;
@@ -85,12 +111,12 @@ export const generateQuestionPaperPDF = (questions, settings) => {
     doc.line(getX(), yPos, getX() + textColWidth, yPos);
     yPos += 6;
   } else {
-    if (settings.subject) doc.text(`Subject: ${settings.subject}`, margin, yPos);
-    if (settings.date) doc.text(`Date: ${settings.date}`, pageWidth - margin - doc.getTextWidth(`Date: ${settings.date}`), yPos);
+    if (settings.subject) doc.text(sanitizeText(`Subject: ${settings.subject}`), margin, yPos);
+    if (settings.date) doc.text(sanitizeText(`Date: ${settings.date}`), pageWidth - margin - doc.getTextWidth(sanitizeText(`Date: ${settings.date}`)), yPos);
     
     yPos += 6;
-    if (settings.duration) doc.text(`Duration: ${settings.duration}`, margin, yPos);
-    if (settings.totalMarks) doc.text(`Total Marks: ${settings.totalMarks}`, pageWidth - margin - doc.getTextWidth(`Total Marks: ${settings.totalMarks}`), yPos);
+    if (settings.duration) doc.text(sanitizeText(`Duration: ${settings.duration}`), margin, yPos);
+    if (settings.totalMarks) doc.text(sanitizeText(`Total Marks: ${settings.totalMarks}`), pageWidth - margin - doc.getTextWidth(sanitizeText(`Total Marks: ${settings.totalMarks}`)), yPos);
     
     yPos += 10;
     doc.text('Name: _______________________________________', margin, yPos);
@@ -144,7 +170,9 @@ export const generateQuestionPaperPDF = (questions, settings) => {
       
       doc.setFontSize(qFontSize);
       doc.setFont(fontName, 'normal');
-      const lines = doc.splitTextToSize(text, optColWidth - 2); 
+      
+      const sanitizedOpt = sanitizeText(text);
+      const lines = doc.splitTextToSize(sanitizedOpt, optColWidth - 2); 
       
       const xPos = getX() + optionIndent + (colIndex * optColWidth);
       let tempY = currentRowY;
@@ -174,7 +202,7 @@ export const generateQuestionPaperPDF = (questions, settings) => {
   }
 
   const filename = settings.subject 
-    ? `${settings.subject.replace(/[^a-z0-9]/gi, '_')}_Question_Paper.pdf` 
+    ? `${sanitizeText(settings.subject).replace(/[^a-z0-9]/gi, '_')}_Question_Paper.pdf` 
     : 'Question_Paper.pdf';
     
   doc.save(filename);
@@ -193,14 +221,29 @@ export const generateAnswerKeyPDF = (questions, settings) => {
   const addText = (text, fontSize, isBold = false, align = 'left') => {
     doc.setFontSize(fontSize);
     doc.setFont(fontName, isBold ? 'bold' : 'normal');
+    const sanitized = sanitizeText(text);
     if (align === 'center') {
-      const textWidth = doc.getTextWidth(text);
-      doc.text(text, (pageWidth - textWidth) / 2, yPos);
+      const textWidth = doc.getTextWidth(sanitized);
+      doc.text(sanitized, (pageWidth - textWidth) / 2, yPos);
     } else {
-      doc.text(text, margin, yPos);
+      doc.text(sanitized, margin, yPos);
     }
     yPos += fontSize * 0.4;
   };
+
+  if (settings.logo) {
+    try {
+      const imgProps = doc.getImageProperties(settings.logo);
+      const logoHeight = 20;
+      const logoWidth = (imgProps.width / imgProps.height) * logoHeight;
+      const xPos = (pageWidth - logoWidth) / 2;
+      
+      doc.addImage(settings.logo, imgProps.fileType, xPos, yPos, logoWidth, logoHeight);
+      yPos += logoHeight + 5;
+    } catch (e) {
+      console.error("Failed to add logo to Answer Key PDF", e);
+    }
+  }
 
   if (settings.institutionName) {
     addText(settings.institutionName.toUpperCase(), 16, true, 'center');
@@ -213,11 +256,11 @@ export const generateAnswerKeyPDF = (questions, settings) => {
   doc.setFontSize(11);
   doc.setFont(fontName, 'normal');
   if (settings.subject) {
-    doc.text(`Subject: ${settings.subject}`, margin, yPos);
+    doc.text(sanitizeText(`Subject: ${settings.subject}`), margin, yPos);
     yPos += 6;
   }
   if (settings.examTitle) {
-    doc.text(`Exam: ${settings.examTitle}`, margin, yPos);
+    doc.text(sanitizeText(`Exam: ${settings.examTitle}`), margin, yPos);
     yPos += 8;
   }
   
@@ -253,14 +296,14 @@ export const generateAnswerKeyPDF = (questions, settings) => {
     }
 
     doc.text(`${index + 1}`, margin + 10, yPos);
-    doc.text(q.answer, margin + 40, yPos);
+    doc.text(sanitizeText(q.answer), margin + 40, yPos);
     
     const answerText = q.options[q.answer];
     let truncated = answerText;
     if (truncated.length > 60) {
       truncated = truncated.substring(0, 57) + '...';
     }
-    doc.text(truncated, margin + 70, yPos);
+    doc.text(sanitizeText(truncated), margin + 70, yPos);
     
     yPos += 7;
   });
@@ -273,7 +316,7 @@ export const generateAnswerKeyPDF = (questions, settings) => {
   }
 
   const filename = settings.subject 
-    ? `${settings.subject.replace(/[^a-z0-9]/gi, '_')}_Answer_Key.pdf` 
+    ? `${sanitizeText(settings.subject).replace(/[^a-z0-9]/gi, '_')}_Answer_Key.pdf` 
     : 'Answer_Key.pdf';
     
   doc.save(filename);

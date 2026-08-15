@@ -33,7 +33,7 @@ export const QuestionCard = ({ question, index, onEdit, onDelete }) => {
         <div className="flex flex-col gap-2">
           <button
             onClick={onEdit}
-            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+            className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
             title="Edit Question"
           >
             <Edit2 className="w-4 h-4" />

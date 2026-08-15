@@ -2,21 +2,26 @@ export const QuizPreview = ({ questions, settings }) => {
   const isClassic = settings.template === 'classic';
   const isCompact = settings.template === 'compact';
   
-  const containerClass = `w-full max-w-[794px] mx-auto bg-white shadow-lg border border-gray-200 rounded-sm mb-8 text-black ${
+  const containerClass = `w-full max-w-[794px] mx-auto bg-white shadow-2xl shadow-slate-900/10 border border-slate-200 rounded mb-8 text-black relative ${
     isClassic ? 'font-serif' : 'font-sans'
-  }`;
+  } before:absolute before:-inset-1 before:bg-white before:rounded-sm before:-z-10 before:shadow-md before:rotate-[0.5deg] after:absolute after:-inset-1 after:bg-white after:rounded-sm after:-z-20 after:shadow-sm after:-rotate-[0.5deg]`;
 
   return (
     <div className={containerClass} style={{ minHeight: '1123px', padding: '10mm' }}>
       
       {/* Header Section */}
-      <div className={`mb-6 ${isClassic ? 'text-center' : 'text-left border-b-2 border-gray-800 pb-4'}`}>
-        {settings.institutionName && (
-          <h1 className="text-xl font-bold uppercase mb-2">{settings.institutionName}</h1>
+      <div className={`mb-6 ${isClassic ? 'flex flex-col items-center text-center' : 'flex items-center gap-4 text-left border-b-2 border-gray-800 pb-4'}`}>
+        {settings.logo && (
+          <img src={settings.logo} alt="College Logo" className={`object-contain shrink-0 ${isClassic ? 'h-24 mb-4' : 'h-20'}`} />
         )}
-        {settings.examTitle && (
-          <h2 className="text-lg font-bold uppercase mb-2">{settings.examTitle}</h2>
-        )}
+        <div className={!isClassic ? 'flex-1' : ''}>
+          {settings.institutionName && (
+            <h1 className="text-xl font-bold uppercase mb-2">{settings.institutionName}</h1>
+          )}
+          {settings.examTitle && (
+            <h2 className="text-lg font-bold uppercase mb-2">{settings.examTitle}</h2>
+          )}
+        </div>
       </div>
 
       {/* Info Details */}
