@@ -9,20 +9,28 @@ import { QuizPreview } from './components/QuizPreview';
 import { DownloadButtons } from './components/DownloadButtons';
 import { AboutPage } from './components/AboutPage';
 
-function App() {
+function App({ initialView }) {
   const [step, setStep] = useState(1);
   const [creationMethod, setCreationMethod] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [fileName, setFileName] = useState('');
-  const [currentView, setCurrentView] = useState('app'); // 'app' or 'about'
+  const [currentView, setCurrentView] = useState(() => {
+    if (initialView) return initialView;
+    if (typeof window !== 'undefined') {
+      return window.location.pathname === '/about' ? 'about' : 'app';
+    }
+    return 'app';
+  });
   
   const [paperSettings, setPaperSettings] = useState(() => {
-    const saved = localStorage.getItem('paperSettings');
-    if (saved) {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('paperSettings');
+      if (saved) {
       try {
         return JSON.parse(saved);
-      } catch (e) {
-        console.error('Failed to parse settings from local storage');
+        } catch (e) {
+          console.error('Failed to parse settings from local storage');
+        }
       }
     }
     return {
@@ -39,11 +47,16 @@ function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem('paperSettings', JSON.stringify(paperSettings));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('paperSettings', JSON.stringify(paperSettings));
+    }
   }, [paperSettings]);
 
   useEffect(() => {
-    window.history.replaceState({ step: 1, creationMethod: null, view: 'app' }, '', '');
+    if (typeof window === 'undefined') return;
+
+    const initialPath = window.location.pathname === '/about' ? '/about' : '/';
+    window.history.replaceState({ step: 1, creationMethod: null, view: window.location.pathname === '/about' ? 'about' : 'app' }, '', initialPath);
 
     const handlePopState = (e) => {
       if (e.state) {
@@ -66,7 +79,8 @@ function App() {
 
   const navigateToView = (viewName) => {
     setCurrentView(viewName);
-    window.history.pushState({ step, creationMethod, view: viewName }, '', '');
+    const path = viewName === 'about' ? '/about' : '/';
+    window.history.pushState({ step, creationMethod, view: viewName }, '', path);
   };
 
   const handleUploadSuccess = (parsedQuestions, name) => {

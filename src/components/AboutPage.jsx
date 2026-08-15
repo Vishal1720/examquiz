@@ -33,7 +33,7 @@ export const AboutPage = ({ onBack }) => {
                 Why we built this
               </h2>
               <p className="text-lg text-slate-700 leading-relaxed font-medium">
-                Teachers spend countless hours of their precious time creating quizzes for students. We built PaperQuizMaker as a simple way to return the favor—giving educators an easy, fast solution to create quizzes so they can focus on what they do best: educating the next generation.
+                Teachers spend countless hours of their precious time creating quizzes for students. We built PaperQuizMaker as a simple way to return the favor - giving educators an easy, fast solution to create quizzes so they can focus on what they do best: educating the next generation.
               </p>
             </div>
 
@@ -88,10 +88,7 @@ export const AboutPage = ({ onBack }) => {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <p className="text-slate-500 font-medium flex items-center gap-2">
-              Built with <Heart className="w-5 h-5 text-rose-500 fill-rose-500" /> by Vishal
-            </p>
+          <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-center gap-6">
             <a 
               href="https://varsync.in" 
               target="_blank" 
