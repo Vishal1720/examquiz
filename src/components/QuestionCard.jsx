@@ -3,7 +3,7 @@ import { Edit2, Trash2 } from 'lucide-react';
 export const QuestionCard = ({ question, index, onEdit, onDelete }) => {
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
-      <div className="flex justify-between items-start gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div className="flex-1">
           <h3 className="text-lg font-medium text-gray-900 mb-4 whitespace-pre-wrap">
             <span className="text-gray-500 mr-2">Question {index + 1}.</span>
@@ -30,11 +30,12 @@ export const QuestionCard = ({ question, index, onEdit, onDelete }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto justify-end sm:justify-start mt-4 sm:mt-0 border-t sm:border-t-0 pt-4 sm:pt-0 border-gray-100">
           <button
             onClick={onEdit}
             className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
             title="Edit Question"
+            aria-label={`Edit Question ${index + 1}`}
           >
             <Edit2 className="w-4 h-4" />
           </button>
@@ -42,6 +43,7 @@ export const QuestionCard = ({ question, index, onEdit, onDelete }) => {
             onClick={onDelete}
             className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             title="Delete Question"
+            aria-label={`Delete Question ${index + 1}`}
           >
             <Trash2 className="w-4 h-4" />
           </button>

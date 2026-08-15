@@ -17,6 +17,7 @@ export const Header = ({ onReset }) => {
           <button
             onClick={onReset}
             className="text-sm font-semibold text-slate-500 hover:text-sky-600 px-4 py-2 rounded-lg hover:bg-sky-50 transition-all active:scale-95"
+            aria-label="Start a new quiz"
           >
             Start New Quiz
           </button>

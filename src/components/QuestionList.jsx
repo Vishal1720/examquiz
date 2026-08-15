@@ -25,7 +25,7 @@ export const QuestionList = ({ questions, setQuestions, onNext, onBack }) => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
           Questions <span className="text-sky-600 bg-sky-50 px-3 py-1 rounded-full text-lg ml-2">{questions.length}</span>
         </h2>

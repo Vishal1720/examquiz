@@ -44,7 +44,7 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
           {/* Logo & Institution Name */}
           <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-6">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label htmlFor="logo-upload" className="block text-sm font-semibold text-slate-700 mb-2">
                 College Logo
               </label>
               <div className="relative group rounded-xl border border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 transition-colors w-full aspect-square flex flex-col items-center justify-center overflow-hidden">
@@ -54,6 +54,7 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
                     <button 
                       onClick={removeLogo}
                       className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Remove Logo"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -65,6 +66,7 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
                   </div>
                 )}
                 <input 
+                  id="logo-upload"
                   type="file" 
                   accept="image/*"
                   onChange={handleLogoUpload}

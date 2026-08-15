@@ -78,7 +78,7 @@ export const ExcelUploader = ({ onUploadSuccess }) => {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`relative border-2 border-dashed rounded-[2rem] p-16 transition-all duration-300 backdrop-blur-xl ${isDragging
+          className={`relative border-2 border-dashed rounded-[2rem] p-8 md:p-16 transition-all duration-300 backdrop-blur-xl ${isDragging
               ? 'border-sky-500 bg-sky-50/90 shadow-2xl shadow-sky-500/20 scale-[1.02]'
               : 'border-slate-300 bg-white/80 hover:border-sky-400 hover:bg-slate-50/90'
             }`}
@@ -91,8 +91,9 @@ export const ExcelUploader = ({ onUploadSuccess }) => {
           </p>
           <p className="text-slate-500 mb-8 font-medium">or click to browse from your computer</p>
 
-          <label className="inline-block cursor-pointer">
+          <label htmlFor="excel-upload" className="inline-block cursor-pointer">
             <input
+              id="excel-upload"
               type="file"
               className="hidden"
               accept=".xlsx, .xls"
