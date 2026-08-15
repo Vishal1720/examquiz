@@ -97,6 +97,8 @@ function App({ initialView }) {
     }
   };
 
+  const highestAccessibleStep = questions.length > 0 ? 5 : (creationMethod ? 2 : 1);
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans relative overflow-hidden text-slate-800">
       {/* Decorative background shapes */}
@@ -112,9 +114,15 @@ function App({ initialView }) {
           <AboutPage onBack={() => navigateToView('app')} />
         ) : (
           <>
-            <StepIndicator currentStep={step} />
+            <div className="hidden md:block">
+              <StepIndicator 
+                currentStep={step} 
+                highestAccessibleStep={highestAccessibleStep}
+                onStepClick={(s) => navigateTo(s)}
+              />
+            </div>
             
-            <div className="mt-4 md:mt-8">
+            <div className="mt-4 md:mt-8 pb-24 md:pb-8">
           {step === 1 && (
             <>
               {creationMethod === null ? (
@@ -216,6 +224,16 @@ function App({ initialView }) {
               </div>
             </div>
           )}
+
+          {/* Mobile Bottom Navigation */}
+          <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-xl border-t border-slate-200 z-50 px-2 pb-safe pt-2 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+            <StepIndicator 
+              currentStep={step} 
+              highestAccessibleStep={highestAccessibleStep}
+              onStepClick={(s) => navigateTo(s)}
+              isMobile={true}
+            />
+          </div>
         </div>
       </>
     )}
