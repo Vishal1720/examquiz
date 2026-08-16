@@ -8,6 +8,7 @@ import { PaperSettings } from './components/PaperSettings';
 import { QuizPreview } from './components/QuizPreview';
 import { DownloadButtons } from './components/DownloadButtons';
 import { AboutPage } from './components/AboutPage';
+import { JnanaSudhaEndpoint } from './components/JnanaSudhaEndpoint';
 
 function App({ initialView }) {
   const [step, setStep] = useState(1);
@@ -17,7 +18,10 @@ function App({ initialView }) {
   const [currentView, setCurrentView] = useState(() => {
     if (initialView) return initialView;
     if (typeof window !== 'undefined') {
-      return window.location.pathname === '/about' ? 'about' : 'app';
+      const path = window.location.pathname;
+      if (path === '/about') return 'about';
+      if (path === '/jnanasudha') return 'jnanasudha';
+      return 'app';
     }
     return 'app';
   });
@@ -55,8 +59,10 @@ function App({ initialView }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const initialPath = window.location.pathname === '/about' ? '/about' : '/';
-    window.history.replaceState({ step: 1, creationMethod: null, view: window.location.pathname === '/about' ? 'about' : 'app' }, '', initialPath);
+    const path = window.location.pathname;
+    const initialView = path === '/about' ? 'about' : path === '/jnanasudha' ? 'jnanasudha' : 'app';
+    const initialPath = path === '/about' ? '/about' : path === '/jnanasudha' ? '/jnanasudha' : '/';
+    window.history.replaceState({ step: 1, creationMethod: null, view: initialView }, '', initialPath);
 
     const handlePopState = (e) => {
       if (e.state) {
@@ -74,12 +80,14 @@ function App({ initialView }) {
     setStep(newStep);
     if (newMethod !== undefined) setCreationMethod(newMethod);
     setCurrentView('app');
-    window.history.pushState({ step: newStep, creationMethod: methodToSave, view: 'app' }, '', '');
+    window.history.pushState({ step: newStep, creationMethod: methodToSave, view: 'app' }, '', '/');
   };
 
   const navigateToView = (viewName) => {
     setCurrentView(viewName);
-    const path = viewName === 'about' ? '/about' : '/';
+    let path = '/';
+    if (viewName === 'about') path = '/about';
+    if (viewName === 'jnanasudha') path = '/jnanasudha';
     window.history.pushState({ step, creationMethod, view: viewName }, '', path);
   };
 
@@ -112,6 +120,11 @@ function App({ initialView }) {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-4 md:py-8 relative z-0">
         {currentView === 'about' ? (
           <AboutPage onBack={() => navigateToView('app')} />
+        ) : currentView === 'jnanasudha' ? (
+          <JnanaSudhaEndpoint 
+            onContinue={() => navigateTo(1, 'excel')}
+            onBack={() => navigateToView('app')}
+          />
         ) : (
           <>
             <div className="hidden md:block">
