@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const routesToPrerender = ['/', '/about'];
+const routesToPrerender = ['/', '/about', '/jnanasudha'];
 
 async function prerender() {
   const template = fs.readFileSync(path.resolve(__dirname, 'dist/index.html'), 'utf-8');
