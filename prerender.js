@@ -12,7 +12,18 @@ async function prerender() {
 
   for (const url of routesToPrerender) {
     const appHtml = render(url);
-    const html = template.replace(`<!--app-html-->`, appHtml).replace(`<div id="root"></div>`, `<div id="root">${appHtml}</div>`);
+    let html = template.replace(`<!--app-html-->`, appHtml).replace(`<div id="root"></div>`, `<div id="root">${appHtml}</div>`);
+
+    if (url === '/about') {
+      const pageTitle = "About Paper Quiz Maker | VarSync Team";
+      const pageDesc = "Learn more about Paper Quiz Maker, our mission, and the VarSync team behind this free tool for educators.";
+      html = html
+        .replace(/<title>.*?<\/title>/, `<title>${pageTitle}</title>`)
+        .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${pageTitle}" />`)
+        .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${pageDesc}" />`);
+    } else if (url === '/jnanasudha') {
+      html = html.replace(/<meta name="robots" content=".*?" \/>/, `<meta name="robots" content="noindex, nofollow" />`);
+    }
 
     const filePath = path.resolve(__dirname, `dist${url === '/' ? '' : url}/index.html`);
     const dir = path.dirname(filePath);

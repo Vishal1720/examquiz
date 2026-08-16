@@ -76,6 +76,26 @@ function App({ initialView }) {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    let pageTitle = "Paper Quiz Maker | Create Exam Question Papers from Excel to PDF instantly";
+    let pageDesc = "A free community product by the VarSync team to help teachers and educators automatically generate professional, printable exam question papers and answer keys in PDF format.";
+
+    if (currentView === 'about') {
+      pageTitle = "About Paper Quiz Maker | VarSync Team";
+      pageDesc = "Learn more about Paper Quiz Maker, our mission, and the VarSync team behind this free tool for educators.";
+    }
+
+    document.title = pageTitle;
+    
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', pageDesc);
+
+    let metaTitle = document.querySelector('meta[name="title"]');
+    if (metaTitle) metaTitle.setAttribute('content', pageTitle);
+  }, [currentView]);
+
   const navigateTo = (newStep, newMethod) => {
     const methodToSave = newMethod !== undefined ? newMethod : creationMethod;
     setStep(newStep);
