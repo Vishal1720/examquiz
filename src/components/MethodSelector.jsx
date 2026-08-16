@@ -29,7 +29,7 @@ export const MethodSelector = ({ onSelect }) => {
             Already have your questions in an Excel sheet? Upload it and we'll instantly convert it into a beautiful PDF.
           </p>
           <span className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600 dark:text-brand-400">
-            Upload file 
+            Upload file
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </span>
         </button>
@@ -50,7 +50,7 @@ export const MethodSelector = ({ onSelect }) => {
             Don't have a file ready? Write or paste your questions directly into our easy-to-use editor.
           </p>
           <span className="inline-flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400">
-            Start typing 
+            Start typing
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </span>
         </button>

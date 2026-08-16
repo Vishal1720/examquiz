@@ -1,6 +1,6 @@
 import { Edit2, Trash2 } from 'lucide-react';
 
-export const QuestionCard = ({ question, index, onEdit, onDelete }) => {
+export const QuestionCard = ({ question, index, onEdit, onDelete, onAnswerSelect }) => {
   return (
     <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
@@ -12,21 +12,25 @@ export const QuestionCard = ({ question, index, onEdit, onDelete }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
             {['A', 'B', 'C', 'D'].map(opt => (
-              <div
+              <button
                 key={opt}
-                className={`p-3 rounded-lg border text-sm transition-colors ${question.answer === opt
-                    ? 'border-green-200 dark:border-green-800/50 bg-green-50 dark:bg-green-900/20 text-green-900 dark:text-green-400'
-                    : 'border-slate-100 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 text-slate-700 dark:text-slate-300'
+                onClick={() => onAnswerSelect && onAnswerSelect(opt)}
+                className={`p-3 rounded-lg border text-sm transition-all text-left w-full relative overflow-hidden ${question.answer === opt
+                    ? 'border-green-300 dark:border-green-800/80 bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-400 ring-1 ring-green-500/30 shadow-sm'
+                    : 'border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
                   }`}
               >
-                <span className="font-semibold mr-2">{opt}.</span>
+                <span className="font-bold mr-2 opacity-80">{opt}.</span>
                 <span className="whitespace-pre-wrap">{question.options[opt]}</span>
-              </div>
+              </button>
             ))}
           </div>
 
-          <div className="text-sm font-medium text-slate-600 dark:text-slate-400">
-            Correct Answer: <span className="text-green-600 dark:text-green-400 font-bold ml-1">{question.answer}</span>
+          <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center">
+            <span>Correct Answer: <span className="text-green-600 dark:text-green-400 font-bold ml-1">{question.answer}</span></span>
+            <span className="text-xs px-2 py-0.5 bg-slate-100 dark:bg-slate-800/80 rounded border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 ml-auto hidden sm:block">
+              Click an option to change
+            </span>
           </div>
         </div>
 

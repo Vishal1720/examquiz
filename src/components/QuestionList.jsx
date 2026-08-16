@@ -30,6 +30,28 @@ export const QuestionList = ({ questions, setQuestions, onNext, onBack }) => {
           Questions <span className="text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 px-3 py-1 rounded-full text-lg ml-2">{questions.length}</span>
         </h2>
         <div className="flex flex-row items-center gap-3 w-full sm:w-auto">
+          {questions.length > 0 && (
+            <select
+              className="px-3 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-sky-500/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              onChange={(e) => {
+                const el = document.getElementById(`question-${e.target.value}`);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                e.target.value = ''; 
+              }}
+              title="Jump to question"
+              defaultValue=""
+            >
+              <option value="" disabled hidden>Jump to...</option>
+              {questions.map((q, idx) => (
+                <option key={q.id} value={idx}>
+                  Q{idx + 1}
+                </option>
+              ))}
+            </select>
+          )}
+
           <button
             onClick={() => setIsAdding(true)}
             className="flex-1 sm:flex-none inline-flex justify-center items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-600 dark:hover:text-brand-400 hover:border-brand-200 dark:hover:border-slate-600 transition-all shadow-sm active:scale-95"
@@ -64,7 +86,7 @@ export const QuestionList = ({ questions, setQuestions, onNext, onBack }) => {
 
       <div className="space-y-4">
         {questions.map((q, index) => (
-          <div key={q.id} className="transition-all duration-300">
+          <div key={q.id} id={`question-${index}`} className="transition-all duration-300 scroll-mt-28">
             {editingId === q.id ? (
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-200 dark:border-brand-800/50 shadow-md shadow-brand-500/10 ring-2 ring-brand-500/20 dark:ring-brand-500/10">
                 <QuestionEditor
@@ -79,6 +101,11 @@ export const QuestionList = ({ questions, setQuestions, onNext, onBack }) => {
                 index={index}
                 onEdit={() => setEditingId(q.id)}
                 onDelete={() => handleDelete(q.id)}
+                onAnswerSelect={(answer) => {
+                  setQuestions(questions.map(questionItem => 
+                    questionItem.id === q.id ? { ...questionItem, answer } : questionItem
+                  ));
+                }}
               />
             )}
           </div>
