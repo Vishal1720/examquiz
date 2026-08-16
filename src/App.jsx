@@ -9,6 +9,7 @@ import { QuizPreview } from './components/QuizPreview';
 import { DownloadButtons } from './components/DownloadButtons';
 import { AboutPage } from './components/AboutPage';
 import { JnanaSudhaEndpoint } from './components/JnanaSudhaEndpoint';
+import { ScrollToTop } from './components/ScrollToTop';
 
 function App({ initialView }) {
   const [step, setStep] = useState(1);
@@ -255,6 +256,7 @@ function App({ initialView }) {
       <footer className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm mt-auto glass border-t-0 border-slate-200/50 dark:border-slate-800/50 relative z-10">
         Created by <button onClick={() => navigateToView('about')} className="text-brand-600 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 font-bold transition-colors underline-offset-4 hover:underline">VarSync</button>
       </footer>
+      <ScrollToTop />
     </div>
   );
 }
