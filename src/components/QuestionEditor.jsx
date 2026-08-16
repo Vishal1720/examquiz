@@ -33,13 +33,13 @@ export const QuestionEditor = ({ initialData, onSave, onCancel }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Question</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Question</label>
         <textarea
           required
           rows={3}
           value={formData.question}
           onChange={(e) => handleChange('question', e.target.value)}
-          className="w-full rounded-lg border-gray-300 border p-3 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+          className="w-full rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-3 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
           placeholder="Enter question text here..."
         />
       </div>
@@ -47,13 +47,13 @@ export const QuestionEditor = ({ initialData, onSave, onCancel }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {['A', 'B', 'C', 'D'].map(opt => (
           <div key={opt}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Option {opt}</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option {opt}</label>
             <input
               type="text"
               required
               value={formData.options[opt]}
               onChange={(e) => handleChange(opt, e.target.value)}
-              className="w-full rounded-lg border-gray-300 border p-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+              className="w-full rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-2 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
               placeholder={`Enter option ${opt}`}
             />
           </div>
@@ -61,11 +61,11 @@ export const QuestionEditor = ({ initialData, onSave, onCancel }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Correct Answer</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Correct Answer</label>
         <select
           value={formData.answer}
           onChange={(e) => handleChange('answer', e.target.value)}
-          className="w-full md:w-48 rounded-lg border-gray-300 border p-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all bg-white"
+          className="w-full md:w-48 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-2 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
         >
           {['A', 'B', 'C', 'D'].map(opt => (
             <option key={opt} value={opt}>Option {opt}</option>
@@ -73,17 +73,17 @@ export const QuestionEditor = ({ initialData, onSave, onCancel }) => {
         </select>
       </div>
 
-      <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
+      <div className="flex gap-3 justify-end pt-4 border-t border-slate-100 dark:border-slate-700">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-sm font-medium text-white bg-sky-600 border border-transparent rounded-lg hover:bg-sky-700 transition-colors shadow-sm"
+          className="px-4 py-2 text-sm font-medium text-white bg-brand-600 dark:bg-brand-500 border border-transparent rounded-lg hover:bg-brand-700 dark:hover:bg-brand-600 transition-colors shadow-sm"
         >
           {initialData ? 'Save Changes' : 'Add Question'}
         </button>

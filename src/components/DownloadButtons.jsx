@@ -14,7 +14,7 @@ export const DownloadButtons = ({ questions, settings }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <button
           onClick={handleDownloadPaperPDF}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-indigo-500 rounded-xl text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-indigo-950/30 border-2 border-indigo-500 dark:border-indigo-500/50 rounded-xl text-sm font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
         >
           <FileText className="w-5 h-5" />
           Question Paper (PDF)
@@ -22,7 +22,7 @@ export const DownloadButtons = ({ questions, settings }) => {
 
         <button
           onClick={handleDownloadPaperWord}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-blue-500 rounded-xl text-sm font-bold text-blue-700 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-blue-950/30 border-2 border-blue-500 dark:border-blue-500/50 rounded-xl text-sm font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
         >
           <FileText className="w-5 h-5" />
           Question Paper (Word)
@@ -30,7 +30,7 @@ export const DownloadButtons = ({ questions, settings }) => {
 
         <button
           onClick={handleDownloadKeyPDF}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-emerald-500 rounded-xl text-sm font-bold text-emerald-700 hover:bg-emerald-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-emerald-950/30 border-2 border-emerald-500 dark:border-emerald-500/50 rounded-xl text-sm font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
         >
           <CheckSquare className="w-5 h-5" />
           Answer Key (PDF)
@@ -38,7 +38,7 @@ export const DownloadButtons = ({ questions, settings }) => {
 
         <button
           onClick={handleDownloadKeyWord}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-teal-500 rounded-xl text-sm font-bold text-teal-700 hover:bg-teal-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-teal-950/30 border-2 border-teal-500 dark:border-teal-500/50 rounded-xl text-sm font-bold text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
         >
           <CheckSquare className="w-5 h-5" />
           Answer Key (Word)

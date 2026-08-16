@@ -2,7 +2,7 @@ export const QuizPreview = ({ questions, settings }) => {
   const isClassic = settings.template === 'classic';
   const isCompact = settings.template === 'compact';
   
-  const containerClass = `w-full max-w-[794px] mx-auto bg-white shadow-2xl shadow-slate-900/10 border border-slate-200 rounded mb-8 text-black relative ${
+  const containerClass = `w-full max-w-[794px] mx-auto bg-white shadow-2xl shadow-slate-900/10 dark:shadow-black/50 border border-slate-200 dark:border-slate-800 rounded mb-8 text-black relative ${
     isClassic ? 'font-serif' : 'font-sans'
   } before:absolute before:-inset-1 before:bg-white before:rounded-sm before:-z-10 before:shadow-md before:rotate-[0.5deg] after:absolute after:-inset-1 after:bg-white after:rounded-sm after:-z-20 after:shadow-sm after:-rotate-[0.5deg]`;
 
