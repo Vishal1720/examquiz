@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle } from 'docx';
+import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle, Math, MathFraction, MathRun, MathSuperScript } from 'docx';
 import pkg from 'file-saver';
 const { saveAs } = pkg;
 
@@ -9,6 +9,97 @@ const noBorders = {
   right: { style: BorderStyle.NONE, size: 0, color: "auto" },
   insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
   insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
+};
+
+const normalizeSuperscripts = (str) => {
+  if (!str) return str;
+  const map = {
+    '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4',
+    '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
+    '⁺': '+', '⁻': '-', '⁼': '=', '⁽': '(', '⁾': ')',
+    'ⁿ': 'n'
+  };
+  return str.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ]+/g, match => {
+    let res = '^';
+    for (let char of match) {
+      res += map[char];
+    }
+    return res;
+  });
+};
+
+const parseMathString = (str) => {
+  const parts = [];
+  const regex = /([a-zA-Z0-9]+)\^(\([^)]+\)|[+-]?\d+|[a-zA-Z])/g;
+  let lastIndex = 0;
+  let match;
+  
+  while ((match = regex.exec(str)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(new MathRun(str.substring(lastIndex, match.index)));
+    }
+    
+    let exponent = match[2];
+    if (exponent.startsWith('(') && exponent.endsWith(')')) {
+      exponent = exponent.slice(1, -1);
+    }
+    
+    parts.push(new MathSuperScript({
+      children: [new MathRun(match[1])],
+      superScript: [new MathRun(exponent)]
+    }));
+    lastIndex = regex.lastIndex;
+  }
+  
+  if (lastIndex < str.length) {
+    parts.push(new MathRun(str.substring(lastIndex)));
+  }
+  
+  return parts;
+};
+
+const renderOptionText = (prefix, rawText, parseMath) => {
+  if (!parseMath || !rawText || typeof rawText !== 'string') {
+    return [new TextRun(`${prefix}${rawText}`)];
+  }
+
+  const text = normalizeSuperscripts(rawText);
+
+  // Regex to detect fractions like x/2, x^2/3, 4/2, 1/√(2), (x+1)/2
+  const fractionRegex = /((?:√?\([^)]+\))|[a-zA-Z0-9^.√]+)\s*\/\s*((?:√?\([^)]+\))|[a-zA-Z0-9^.√]+)/g;
+  
+  if (!text.match(fractionRegex) && !text.includes('^')) {
+    return [new TextRun(`${prefix}${rawText}`)];
+  }
+
+  const children = [];
+  children.push(new TextRun(`${prefix}`));
+  
+  const mathChildren = [];
+  let lastIndex = 0;
+  let match;
+  
+  while ((match = fractionRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      const preceding = text.substring(lastIndex, match.index);
+      mathChildren.push(...parseMathString(preceding));
+    }
+    
+    mathChildren.push(new MathFraction({
+      numerator: parseMathString(match[1]),
+      denominator: parseMathString(match[2])
+    }));
+    
+    lastIndex = fractionRegex.lastIndex;
+  }
+  
+  if (lastIndex < text.length) {
+    const trailing = text.substring(lastIndex);
+    mathChildren.push(...parseMathString(trailing));
+  }
+  
+  children.push(new Math({ children: mathChildren }));
+  return children;
 };
 
 export const generateQuestionPaperWord = async (questions, settings) => {
@@ -117,8 +208,9 @@ export const generateQuestionPaperWord = async (questions, settings) => {
     if (numCols === 1) {
       ['A', 'B', 'C', 'D'].forEach(k => {
         children.push(new Paragraph({
-          text: `${k}. ${q.options[k]}`,
+          children: renderOptionText(`${k}. `, q.options[k], settings.parseMath),
           indent: { left: 720 },
+          spacing: { before: 80, after: 80 }
         }));
       });
     } else if (numCols === 2) {
@@ -126,14 +218,14 @@ export const generateQuestionPaperWord = async (questions, settings) => {
         rows: [
           new TableRow({
             children: [
-              new TableCell({ children: [new Paragraph({ text: `A. ${q.options['A']}` })], width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders }),
-              new TableCell({ children: [new Paragraph({ text: `B. ${q.options['B']}` })], width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders })
+              new TableCell({ children: [new Paragraph({ children: renderOptionText(`A. `, q.options['A'], settings.parseMath), spacing: { before: 80, after: 80 } })], width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders }),
+              new TableCell({ children: [new Paragraph({ children: renderOptionText(`B. `, q.options['B'], settings.parseMath), spacing: { before: 80, after: 80 } })], width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders })
             ]
           }),
           new TableRow({
             children: [
-              new TableCell({ children: [new Paragraph({ text: `C. ${q.options['C']}` })], width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders }),
-              new TableCell({ children: [new Paragraph({ text: `D. ${q.options['D']}` })], width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders })
+              new TableCell({ children: [new Paragraph({ children: renderOptionText(`C. `, q.options['C'], settings.parseMath), spacing: { before: 80, after: 80 } })], width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders }),
+              new TableCell({ children: [new Paragraph({ children: renderOptionText(`D. `, q.options['D'], settings.parseMath), spacing: { before: 80, after: 80 } })], width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders })
             ]
           })
         ],
@@ -146,10 +238,10 @@ export const generateQuestionPaperWord = async (questions, settings) => {
         rows: [
           new TableRow({
             children: [
-              new TableCell({ children: [new Paragraph({ text: `A. ${q.options['A']}` })], width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorders }),
-              new TableCell({ children: [new Paragraph({ text: `B. ${q.options['B']}` })], width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorders }),
-              new TableCell({ children: [new Paragraph({ text: `C. ${q.options['C']}` })], width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorders }),
-              new TableCell({ children: [new Paragraph({ text: `D. ${q.options['D']}` })], width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorders })
+              new TableCell({ children: [new Paragraph({ children: renderOptionText(`A. `, q.options['A'], settings.parseMath), spacing: { before: 80, after: 80 } })], width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorders }),
+              new TableCell({ children: [new Paragraph({ children: renderOptionText(`B. `, q.options['B'], settings.parseMath), spacing: { before: 80, after: 80 } })], width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorders }),
+              new TableCell({ children: [new Paragraph({ children: renderOptionText(`C. `, q.options['C'], settings.parseMath), spacing: { before: 80, after: 80 } })], width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorders }),
+              new TableCell({ children: [new Paragraph({ children: renderOptionText(`D. `, q.options['D'], settings.parseMath), spacing: { before: 80, after: 80 } })], width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorders })
             ]
           })
         ],
@@ -230,7 +322,7 @@ export const generateAnswerKeyWord = async (questions, settings) => {
       children: [
         new TableCell({ children: [new Paragraph({ text: `${index + 1}` })] }),
         new TableCell({ children: [new Paragraph({ text: q.answer })] }),
-        new TableCell({ children: [new Paragraph({ text: answerText })] })
+        new TableCell({ children: [new Paragraph({ children: renderOptionText('', answerText, settings.parseMath) })] })
       ]
     }));
   });

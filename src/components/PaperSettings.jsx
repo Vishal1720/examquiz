@@ -153,6 +153,22 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
               <option value="4-col">4 Columns (Inline)</option>
             </select>
           </div>
+          <div className="md:col-span-2 mt-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={!!settings.parseMath}
+                onChange={(e) => handleChange('parseMath', e.target.checked)}
+                className="w-5 h-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 bg-white/50 dark:bg-slate-900/50 dark:border-slate-600 cursor-pointer"
+              />
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Format fractions in options as Math Formulas <span className="text-xs text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 px-2 py-0.5 rounded-full ml-1">(Word Only)</span> (e.g., x/2 → <span className="font-serif italic text-brand-600 dark:text-brand-400 border-b border-brand-200 dark:border-brand-800/30 pb-0.5"><sup>x</sup>/<sub>2</sub></span>)
+              </span>
+            </label>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 ml-8">
+              Automatically converts simple fraction patterns like `x/2 + 4/2` into native math fractions when generating Word Documents. (Does not apply to PDF exports).
+            </p>
+          </div>
         </div>
       </div>
 
