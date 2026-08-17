@@ -28,17 +28,7 @@ function App({ initialView }) {
   });
   
   const [paperSettings, setPaperSettings] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('paperSettings');
-      if (saved) {
-      try {
-        return JSON.parse(saved);
-        } catch (e) {
-          console.error('Failed to parse settings from local storage');
-        }
-      }
-    }
-    return {
+    const defaults = {
       institutionName: '',
       department: '',
       subject: 'Mathematics',
@@ -48,13 +38,36 @@ function App({ initialView }) {
       totalMarks: '',
       instructions: 'Answer all questions. Select the most appropriate answer.',
       optionsLayout: '1-col',
-      template: 'classic'
+      template: 'classic',
+      logo: '',
+      logo2: ''
     };
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('paperSettings');
+      if (saved) {
+        try {
+          return { ...defaults, ...JSON.parse(saved) };
+        } catch (e) {
+          console.error('Failed to parse settings from local storage');
+        }
+      }
+    }
+    return defaults;
   });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('paperSettings', JSON.stringify(paperSettings));
+      try {
+        localStorage.setItem('paperSettings', JSON.stringify(paperSettings));
+      } catch (e) {
+        console.error('Failed to save to localStorage, likely due to large logo.', e);
+        const { logo, logo2, ...settingsWithoutLogos } = paperSettings;
+        try {
+          localStorage.setItem('paperSettings', JSON.stringify(settingsWithoutLogos));
+        } catch(e2) {
+          console.error('Failed to save even without logos', e2);
+        }
+      }
     }
   }, [paperSettings]);
 
