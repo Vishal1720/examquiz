@@ -102,6 +102,85 @@ const renderOptionText = (prefix, rawText, parseMath) => {
   return children;
 };
 
+const parseMixedMathAndText = (str) => {
+  const parts = [];
+  const regex = /([a-zA-Z0-9]+)\^(\([^)]+\)|[+-]?\d+|[a-zA-Z])/g;
+  let lastIndex = 0;
+  let match;
+  
+  while ((match = regex.exec(str)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(new TextRun(str.substring(lastIndex, match.index)));
+    }
+    
+    let exponent = match[2];
+    if (exponent.startsWith('(') && exponent.endsWith(')')) {
+      exponent = exponent.slice(1, -1);
+    }
+    
+    parts.push(new Math({
+      children: [
+        new MathSuperScript({
+          children: [new MathRun(match[1])],
+          superScript: [new MathRun(exponent)]
+        })
+      ]
+    }));
+    lastIndex = regex.lastIndex;
+  }
+  
+  if (lastIndex < str.length) {
+    parts.push(new TextRun(str.substring(lastIndex)));
+  }
+  
+  return parts;
+};
+
+const renderQuestionText = (prefix, rawText, parseMath) => {
+  if (!parseMath || !rawText || typeof rawText !== 'string') {
+    return [new TextRun(`${prefix}${rawText}`)];
+  }
+
+  const text = normalizeSuperscripts(rawText);
+  const fractionRegex = /((?:√?\([^)]+\))|[a-zA-Z0-9^.√]+)\s*\/\s*((?:√?\([^)]+\))|[a-zA-Z0-9^.√]+)/g;
+  
+  if (!text.match(fractionRegex) && !text.includes('^')) {
+    return [new TextRun(`${prefix}${rawText}`)];
+  }
+
+  const children = [];
+  children.push(new TextRun(`${prefix}`));
+  
+  let lastIndex = 0;
+  let match;
+  
+  while ((match = fractionRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      const preceding = text.substring(lastIndex, match.index);
+      children.push(...parseMixedMathAndText(preceding));
+    }
+    
+    children.push(new Math({
+      children: [
+        new MathFraction({
+          numerator: parseMathString(match[1]),
+          denominator: parseMathString(match[2])
+        })
+      ]
+    }));
+    
+    lastIndex = fractionRegex.lastIndex;
+  }
+  
+  if (lastIndex < text.length) {
+    const trailing = text.substring(lastIndex);
+    children.push(...parseMixedMathAndText(trailing));
+  }
+  
+  return children;
+};
+
+
 export const generateQuestionPaperWord = async (questions, settings) => {
   const children = [];
   const template = settings.template || 'classic';
@@ -197,9 +276,7 @@ export const generateQuestionPaperWord = async (questions, settings) => {
     const actualLayout = isCompact && optLayout === '4-col' ? '2-col' : optLayout;
     const numCols = actualLayout === '4-col' ? 4 : actualLayout === '2-col' ? 2 : 1;
     children.push(new Paragraph({
-      children: [
-        new TextRun({ text: `${index + 1}. ${q.question}` })
-      ],
+      children: renderQuestionText(`${index + 1}. `, q.question, settings.parseMathQuestion),
       spacing: { before: 200, after: 100 }
     }));
 

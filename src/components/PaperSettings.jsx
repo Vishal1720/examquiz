@@ -169,6 +169,19 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
               Automatically converts simple fraction patterns like `x/2 + 4/2` into native math fractions when generating Word Documents. (Does not apply to PDF exports).
             </p>
           </div>
+          <div className="md:col-span-2 mt-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={!!settings.parseMathQuestion}
+                onChange={(e) => handleChange('parseMathQuestion', e.target.checked)}
+                className="w-5 h-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 bg-white/50 dark:bg-slate-900/50 dark:border-slate-600 cursor-pointer"
+              />
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Format fractions in questions as Math Formulas <span className="text-xs text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 px-2 py-0.5 rounded-full ml-1">(Word Only)</span>
+              </span>
+            </label>
+          </div>
         </div>
       </div>
 
