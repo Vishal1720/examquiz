@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle, Math, MathFraction, MathRun, MathSuperScript } from 'docx';
+import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle, Math, MathFraction, MathRun, MathSuperScript, ImageRun } from 'docx';
 import pkg from 'file-saver';
 const { saveAs } = pkg;
 
@@ -10,6 +10,18 @@ const noBorders = {
   insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
   insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
 };
+
+const base64DataURLToArrayBuffer = (dataURL) => {
+  const base64 = dataURL.split(',')[1];
+  const binaryString = window.atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+};
+
 
 const normalizeSuperscripts = (str) => {
   if (!str) return str;
@@ -188,6 +200,27 @@ export const generateQuestionPaperWord = async (questions, settings) => {
   const isCompact = template === 'compact';
 
   // Header Section
+  if (settings.logo) {
+    try {
+      const logoBuffer = base64DataURLToArrayBuffer(settings.logo);
+      children.push(new Paragraph({
+        children: [
+          new ImageRun({
+            data: logoBuffer,
+            transformation: {
+              width: 80,
+              height: 80,
+            },
+          }),
+        ],
+        alignment: isClassic ? AlignmentType.CENTER : AlignmentType.LEFT,
+        spacing: { after: 100 }
+      }));
+    } catch (err) {
+      console.error("Error adding logo to word doc", err);
+    }
+  }
+
   if (settings.institutionName) {
     children.push(new Paragraph({
       text: settings.institutionName.toUpperCase(),
@@ -344,6 +377,27 @@ export const generateQuestionPaperWord = async (questions, settings) => {
 
 export const generateAnswerKeyWord = async (questions, settings) => {
   const children = [];
+
+  if (settings.logo) {
+    try {
+      const logoBuffer = base64DataURLToArrayBuffer(settings.logo);
+      children.push(new Paragraph({
+        children: [
+          new ImageRun({
+            data: logoBuffer,
+            transformation: {
+              width: 80,
+              height: 80,
+            },
+          }),
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 100 }
+      }));
+    } catch (err) {
+      console.error("Error adding logo to answer key doc", err);
+    }
+  }
 
   if (settings.institutionName) {
     children.push(new Paragraph({
