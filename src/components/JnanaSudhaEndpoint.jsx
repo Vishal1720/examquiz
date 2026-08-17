@@ -239,6 +239,7 @@ Create the \`.xlsx\` file with exactly these six columns:
 One question per row.
 
 Do not add extra sheets, extra columns, explanations, styling requirements, formatting requirements, or unrelated information.
+**Do not add question numbers in the Excel output.**
 
 Final response should only report:
 
