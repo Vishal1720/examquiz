@@ -40,6 +40,7 @@ function App({ initialView }) {
     }
     return {
       institutionName: '',
+      department: '',
       subject: 'Mathematics',
       examTitle: '',
       date: '',

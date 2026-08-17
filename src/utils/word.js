@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle, Math, MathFraction, MathRun, MathSuperScript, ImageRun } from 'docx';
+import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle, Math, MathFraction, MathRun, MathSuperScript, ImageRun, VerticalAlign } from 'docx';
 import pkg from 'file-saver';
 const { saveAs } = pkg;
 
@@ -179,8 +179,95 @@ export const generateQuestionPaperWord = async (questions, settings) => {
   const template = settings.template || 'classic';
   const isClassic = template === 'classic';
   const isCompact = template === 'compact';
+  const isLgs = template === 'lgs';
 
   // Header Section
+  if (isLgs) {
+    const lgsBorder = { style: BorderStyle.SINGLE, size: 4, color: "000000" };
+    const tableBorders = {
+      top: lgsBorder, bottom: lgsBorder, left: lgsBorder, right: lgsBorder,
+      insideHorizontal: lgsBorder, insideVertical: lgsBorder
+    };
+    const emptyBorder = { style: BorderStyle.NONE, size: 0, color: "auto" };
+
+    const leftCellChildren = [];
+    if (settings.logo) {
+      try {
+        leftCellChildren.push(new Paragraph({
+          children: [new ImageRun({ data: base64DataURLToArrayBuffer(settings.logo), transformation: { width: 70, height: 70 } })],
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 100 }
+        }));
+      } catch(e) {}
+    }
+    if (settings.department) {
+      leftCellChildren.push(new Paragraph({
+        children: [new TextRun({ text: settings.department.toUpperCase(), bold: true })],
+        alignment: AlignmentType.CENTER
+      }));
+    } else {
+      leftCellChildren.push(new Paragraph(""));
+    }
+
+    const rightCellChildren = [];
+    if (settings.logo2) {
+      try {
+        rightCellChildren.push(new Paragraph({
+          children: [new ImageRun({ data: base64DataURLToArrayBuffer(settings.logo2), transformation: { width: 70, height: 70 } })],
+          alignment: AlignmentType.CENTER
+        }));
+      } catch(e) {}
+    } else {
+      rightCellChildren.push(new Paragraph(""));
+    }
+
+    const middleTopCell = new Paragraph({
+      children: [new TextRun({ text: (settings.institutionName || '').toUpperCase(), bold: true, size: 28 })],
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 100, after: 100 }
+    });
+
+    const examDateLines = [];
+    if (settings.examTitle) examDateLines.push(new TextRun({ text: settings.examTitle.toUpperCase(), bold: true }));
+    if (settings.date) {
+      if (examDateLines.length > 0) examDateLines.push(new TextRun({ text: "\n", bold: true }));
+      examDateLines.push(new TextRun({ text: `DATE: ${settings.date}`, bold: true }));
+    }
+    const middleBottomLeft = new Paragraph({ children: examDateLines, alignment: AlignmentType.CENTER, spacing: { before: 100, after: 100 } });
+
+    const subjectLines = [];
+    if (settings.subject) {
+      const parts = settings.subject.toUpperCase().split('\n');
+      parts.forEach((p, idx) => {
+        if (idx > 0) subjectLines.push(new TextRun({ text: p, bold: true, size: 24, break: 1 }));
+        else subjectLines.push(new TextRun({ text: p, bold: true, size: 24 }));
+      });
+    }
+    const middleBottomRight = new Paragraph({ children: subjectLines, alignment: AlignmentType.CENTER, spacing: { before: 100, after: 100 } });
+
+    children.push(new Table({
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({ children: leftCellChildren, width: { size: 20, type: WidthType.PERCENTAGE }, rowSpan: 2, margins: { top: 100, bottom: 100 }, verticalAlign: VerticalAlign.CENTER }),
+            new TableCell({ children: [middleTopCell], width: { size: 60, type: WidthType.PERCENTAGE }, columnSpan: 2, margins: { top: 100, bottom: 100 }, verticalAlign: VerticalAlign.CENTER }),
+            new TableCell({ children: rightCellChildren, width: { size: 20, type: WidthType.PERCENTAGE }, rowSpan: 2, margins: { top: 100, bottom: 100 }, verticalAlign: VerticalAlign.CENTER })
+          ]
+        }),
+        new TableRow({
+          children: [
+            new TableCell({ children: [middleBottomLeft], width: { size: 30, type: WidthType.PERCENTAGE }, margins: { top: 100, bottom: 100 }, verticalAlign: VerticalAlign.CENTER }),
+            new TableCell({ children: [middleBottomRight], width: { size: 30, type: WidthType.PERCENTAGE }, margins: { top: 100, bottom: 100 }, verticalAlign: VerticalAlign.CENTER })
+          ]
+        })
+      ],
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: tableBorders
+    }));
+    
+    // spacing after header
+    children.push(new Paragraph({ spacing: { after: 300 } }));
+  } else {
   if (settings.logo) {
     try {
       const logoBuffer = base64DataURLToArrayBuffer(settings.logo);
@@ -272,6 +359,8 @@ export const generateQuestionPaperWord = async (questions, settings) => {
     border: { bottom: { color: "auto", space: 1, style: BorderStyle.SINGLE, size: 6 } },
     spacing: { after: 200 }
   }));
+
+  }
 
   // Instructions
   if (settings.instructions) {

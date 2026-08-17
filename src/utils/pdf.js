@@ -26,6 +26,7 @@ export const generateQuestionPaperPDF = (questions, settings) => {
   const template = settings.template || 'classic';
   const isClassic = template === 'classic';
   const isCompact = template === 'compact';
+  const isLgs = template === 'lgs';
   
   const fontName = isClassic ? 'times' : 'helvetica';
   const colGap = 10;
@@ -68,64 +69,142 @@ export const generateQuestionPaperPDF = (questions, settings) => {
   };
 
   // Header Section
-  if (settings.logo) {
-    try {
-      const imgProps = doc.getImageProperties(settings.logo);
-      const logoHeight = 20;
-      const logoWidth = (imgProps.width / imgProps.height) * logoHeight;
-      const xPos = isClassic ? (pageWidth - logoWidth) / 2 : margin;
-      
-      doc.addImage(settings.logo, imgProps.fileType, xPos, yPos, logoWidth, logoHeight);
-      yPos += logoHeight + 5;
-    } catch (e) {
-      console.error("Failed to add logo to PDF", e);
+  if (isLgs) {
+    const lgsHeaderHeight = 35; 
+    const leftWidth = contentWidth * 0.2;
+    const midWidth = contentWidth * 0.6;
+    const rightWidth = contentWidth * 0.2;
+
+    doc.setLineWidth(0.5);
+    doc.rect(margin, yPos, contentWidth, lgsHeaderHeight);
+    
+    doc.line(margin + leftWidth, yPos, margin + leftWidth, yPos + lgsHeaderHeight);
+    doc.line(margin + leftWidth + midWidth, yPos, margin + leftWidth + midWidth, yPos + lgsHeaderHeight);
+    
+    const midHeaderHalf = lgsHeaderHeight * 0.45;
+    doc.line(margin + leftWidth, yPos + midHeaderHalf, margin + leftWidth + midWidth, yPos + midHeaderHalf);
+    doc.line(margin + leftWidth + (midWidth / 2), yPos + midHeaderHalf, margin + leftWidth + (midWidth / 2), yPos + lgsHeaderHeight);
+
+    if (settings.logo) {
+      try {
+        const imgProps = doc.getImageProperties(settings.logo);
+        const logoHeight = 15;
+        const logoWidth = (imgProps.width / imgProps.height) * logoHeight;
+        const xPos = margin + (leftWidth - logoWidth) / 2;
+        doc.addImage(settings.logo, imgProps.fileType, xPos, yPos + 3, logoWidth, logoHeight);
+      } catch (e) {}
     }
-  }
+    if (settings.department) {
+      doc.setFontSize(10);
+      doc.setFont(fontName, 'bold');
+      const deptText = sanitizeText(settings.department.toUpperCase());
+      const txtWidth = doc.getTextWidth(deptText);
+      doc.text(deptText, margin + (leftWidth - txtWidth) / 2, yPos + 25);
+    }
 
-  if (settings.institutionName) {
-    addText(settings.institutionName.toUpperCase(), 16, true, isClassic ? 'center' : 'left');
-    yPos += 5;
-  }
-  
-  if (settings.examTitle) {
-    addText(settings.examTitle.toUpperCase(), 14, true, isClassic ? 'center' : 'left');
-    yPos += 5;
-  }
+    if (settings.logo2) {
+      try {
+        const imgProps = doc.getImageProperties(settings.logo2);
+        const logoHeight = 18;
+        const logoWidth = (imgProps.width / imgProps.height) * logoHeight;
+        const xPos = margin + leftWidth + midWidth + (rightWidth - logoWidth) / 2;
+        doc.addImage(settings.logo2, imgProps.fileType, xPos, yPos + 8, logoWidth, logoHeight);
+      } catch (e) {}
+    }
 
-  // Info details
-  const infoFontSize = isCompact ? 9 : 11;
-  doc.setFontSize(infoFontSize);
-  doc.setFont(fontName, 'normal');
-  yPos += 5;
-  
-  // To keep info compact in 2-column mode, we just stack it
-  if (isCompact) {
-    if (settings.subject) { addText(`Subject: ${settings.subject}`, infoFontSize, true); yPos += 2; }
-    if (settings.date) { addText(`Date: ${settings.date}`, infoFontSize); yPos += 2; }
-    if (settings.duration) { addText(`Duration: ${settings.duration}`, infoFontSize); yPos += 2; }
-    if (settings.totalMarks) { addText(`Total Marks: ${settings.totalMarks}`, infoFontSize); yPos += 2; }
-    yPos += 4;
-    addText('Name: _______________________', infoFontSize); yPos += 2;
-    addText('Reg No: _____________________', infoFontSize); yPos += 4;
-    doc.setLineWidth(0.5);
-    doc.line(getX(), yPos, getX() + textColWidth, yPos);
-    yPos += 6;
+    if (settings.institutionName) {
+      doc.setFontSize(14);
+      doc.setFont(fontName, 'bold');
+      const instText = sanitizeText(settings.institutionName.toUpperCase());
+      const txtWidth = doc.getTextWidth(instText);
+      doc.text(instText, margin + leftWidth + (midWidth - txtWidth) / 2, yPos + 10);
+    }
+
+    doc.setFontSize(11);
+    let leftBoxY = yPos + midHeaderHalf + 7;
+    if (settings.examTitle) {
+      const examText = sanitizeText(settings.examTitle.toUpperCase());
+      const txtWidth = doc.getTextWidth(examText);
+      doc.text(examText, margin + leftWidth + (midWidth / 4) - (txtWidth / 2), leftBoxY);
+      leftBoxY += 5;
+    }
+    if (settings.date) {
+      const dateText = sanitizeText(`DATE: ${settings.date}`);
+      const txtWidth = doc.getTextWidth(dateText);
+      doc.text(dateText, margin + leftWidth + (midWidth / 4) - (txtWidth / 2), leftBoxY);
+    }
+
+    if (settings.subject) {
+      doc.setFontSize(11);
+      const subjText = sanitizeText(settings.subject.toUpperCase());
+      const lines = doc.splitTextToSize(subjText, (midWidth / 2) - 4);
+      let rightBoxY = yPos + midHeaderHalf + 7;
+      for (let i = 0; i < lines.length; i++) {
+        const txtWidth = doc.getTextWidth(lines[i]);
+        doc.text(lines[i], margin + leftWidth + (midWidth / 2) + (midWidth / 4) - (txtWidth / 2), rightBoxY);
+        rightBoxY += 5;
+      }
+    }
+
+    yPos += lgsHeaderHeight + 10;
   } else {
-    if (settings.subject) doc.text(sanitizeText(`Subject: ${settings.subject}`), margin, yPos);
-    if (settings.date) doc.text(sanitizeText(`Date: ${settings.date}`), pageWidth - margin - doc.getTextWidth(sanitizeText(`Date: ${settings.date}`)), yPos);
+    if (settings.logo) {
+      try {
+        const imgProps = doc.getImageProperties(settings.logo);
+        const logoHeight = 20;
+        const logoWidth = (imgProps.width / imgProps.height) * logoHeight;
+        const xPos = isClassic ? (pageWidth - logoWidth) / 2 : margin;
+        
+        doc.addImage(settings.logo, imgProps.fileType, xPos, yPos, logoWidth, logoHeight);
+        yPos += logoHeight + 5;
+      } catch (e) {
+        console.error("Failed to add logo to PDF", e);
+      }
+    }
+
+    if (settings.institutionName) {
+      addText(settings.institutionName.toUpperCase(), 16, true, isClassic ? 'center' : 'left');
+      yPos += 5;
+    }
     
-    yPos += 6;
-    if (settings.duration) doc.text(sanitizeText(`Duration: ${settings.duration}`), margin, yPos);
-    if (settings.totalMarks) doc.text(sanitizeText(`Total Marks: ${settings.totalMarks}`), pageWidth - margin - doc.getTextWidth(sanitizeText(`Total Marks: ${settings.totalMarks}`)), yPos);
+    if (settings.examTitle) {
+      addText(settings.examTitle.toUpperCase(), 14, true, isClassic ? 'center' : 'left');
+      yPos += 5;
+    }
+
+    const infoFontSize = isCompact ? 9 : 11;
+    doc.setFontSize(infoFontSize);
+    doc.setFont(fontName, 'normal');
+    yPos += 5;
     
-    yPos += 10;
-    doc.text('Name: _______________________________________', margin, yPos);
-    doc.text('Register No: _________________________________', pageWidth - margin - 85, yPos);
-    
-    yPos += 10;
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 8;
+    if (isCompact) {
+      if (settings.subject) { addText(`Subject: ${settings.subject}`, infoFontSize, true); yPos += 2; }
+      if (settings.date) { addText(`Date: ${settings.date}`, infoFontSize); yPos += 2; }
+      if (settings.duration) { addText(`Duration: ${settings.duration}`, infoFontSize); yPos += 2; }
+      if (settings.totalMarks) { addText(`Total Marks: ${settings.totalMarks}`, infoFontSize); yPos += 2; }
+      yPos += 4;
+      addText('Name: _______________________', infoFontSize); yPos += 2;
+      addText('Reg No: _____________________', infoFontSize); yPos += 4;
+      doc.setLineWidth(0.5);
+      doc.line(getX(), yPos, getX() + textColWidth, yPos);
+      yPos += 6;
+    } else {
+      if (settings.subject) doc.text(sanitizeText(`Subject: ${settings.subject}`), margin, yPos);
+      if (settings.date) doc.text(sanitizeText(`Date: ${settings.date}`), pageWidth - margin - doc.getTextWidth(sanitizeText(`Date: ${settings.date}`)), yPos);
+      
+      yPos += 6;
+      if (settings.duration) doc.text(sanitizeText(`Duration: ${settings.duration}`), margin, yPos);
+      if (settings.totalMarks) doc.text(sanitizeText(`Total Marks: ${settings.totalMarks}`), pageWidth - margin - doc.getTextWidth(sanitizeText(`Total Marks: ${settings.totalMarks}`)), yPos);
+      
+      yPos += 10;
+      doc.text('Name: _______________________________________', margin, yPos);
+      doc.text('Register No: _________________________________', pageWidth - margin - 85, yPos);
+      
+      yPos += 10;
+      doc.setLineWidth(0.5);
+      doc.line(margin, yPos, pageWidth - margin, yPos);
+      yPos += 8;
+    }
   }
 
   // Instructions

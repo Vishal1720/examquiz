@@ -20,9 +20,25 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
     handleChange('logo', '');
   };
 
+  const handleLogo2Upload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleChange('logo2', reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeLogo2 = () => {
+    handleChange('logo2', '');
+  };
+
   const fields = [
     { id: 'institutionName', label: 'Institution Name', placeholder: 'e.g. Poornaprajna Institute of Management' },
-    { id: 'subject', label: 'Subject', placeholder: 'e.g. Mathematics' },
+    { id: 'department', label: 'Department / Category', placeholder: 'e.g. MATHEMATICS' },
+    { id: 'subject', label: 'Subject', placeholder: 'e.g. JUT-15\nELLIPSE AND HYPERBOLA', type: 'textarea' },
     { id: 'examTitle', label: 'Exam / Quiz Title', placeholder: 'e.g. Mathematics Internal Assessment' },
     { id: 'date', label: 'Date', type: 'date' },
     { id: 'duration', label: 'Duration', placeholder: 'e.g. 30 Minutes' },
@@ -42,10 +58,10 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Logo & Institution Name */}
-          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-6">
+          <div className={`md:col-span-2 grid grid-cols-1 ${settings.template === 'lgs' ? 'sm:grid-cols-[120px_120px_1fr]' : 'sm:grid-cols-[120px_1fr]'} gap-6`}>
             <div>
-              <label htmlFor="logo-upload" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                College Logo
+              <label htmlFor="logo-upload" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 truncate">
+                {settings.template === 'lgs' ? 'Left Logo' : 'College Logo'}
               </label>
               <div className="relative group rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-full aspect-square flex flex-col items-center justify-center overflow-hidden">
                 {settings.logo ? (
@@ -75,6 +91,41 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
                 />
               </div>
             </div>
+
+            {settings.template === 'lgs' && (
+              <div>
+                <label htmlFor="logo2-upload" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 truncate">
+                  Right Logo
+                </label>
+                <div className="relative group rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-full aspect-square flex flex-col items-center justify-center overflow-hidden">
+                  {settings.logo2 ? (
+                    <>
+                      <img src={settings.logo2} alt="Logo 2" className="w-full h-full object-contain p-2" />
+                      <button 
+                        onClick={removeLogo2}
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Remove Right Logo"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="text-center p-2 text-slate-400 dark:text-slate-500">
+                      <Upload className="w-6 h-6 mx-auto mb-1" />
+                      <span className="text-xs text-center block leading-tight mt-1">Upload<br/>Right</span>
+                    </div>
+                  )}
+                  <input 
+                    id="logo2-upload"
+                    type="file" 
+                    accept="image/*"
+                    onChange={handleLogo2Upload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    title="Upload Right Logo"
+                  />
+                </div>
+              </div>
+            )}
             
             <div className="flex flex-col">
               <label htmlFor="institutionName" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
@@ -97,14 +148,25 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
               <label htmlFor={f.id} className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 {f.label}
               </label>
-              <input
-                id={f.id}
-                type={f.type || 'text'}
-                value={settings[f.id] || ''}
-                onChange={(e) => handleChange(f.id, e.target.value)}
-                placeholder={f.placeholder}
-                className="w-full rounded-xl border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-900/50 p-3 text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
-              />
+              {f.type === 'textarea' ? (
+                <textarea
+                  id={f.id}
+                  rows={2}
+                  value={settings[f.id] || ''}
+                  onChange={(e) => handleChange(f.id, e.target.value)}
+                  placeholder={f.placeholder}
+                  className="w-full rounded-xl border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-900/50 p-3 text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-y"
+                />
+              ) : (
+                <input
+                  id={f.id}
+                  type={f.type || 'text'}
+                  value={settings[f.id] || ''}
+                  onChange={(e) => handleChange(f.id, e.target.value)}
+                  placeholder={f.placeholder}
+                  className="w-full rounded-xl border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-900/50 p-3 text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                />
+              )}
             </div>
           ))}
 
@@ -135,6 +197,7 @@ export const PaperSettings = ({ settings, setSettings, onNext, onBack }) => {
               <option value="classic">Classic Academic</option>
               <option value="modern">Modern Assessment</option>
               <option value="compact">Compact (2-Column)</option>
+              <option value="lgs">LGS Format</option>
             </select>
           </div>
 

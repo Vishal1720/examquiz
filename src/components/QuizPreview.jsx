@@ -1,6 +1,7 @@
 export const QuizPreview = ({ questions, settings }) => {
   const isClassic = settings.template === 'classic';
   const isCompact = settings.template === 'compact';
+  const isLgs = settings.template === 'lgs';
   
   const containerClass = `w-full max-w-[794px] mx-auto bg-white shadow-2xl shadow-slate-900/10 dark:shadow-black/50 border border-slate-200 dark:border-slate-800 rounded mb-8 text-black relative ${
     isClassic ? 'font-serif' : 'font-sans'
@@ -10,36 +11,66 @@ export const QuizPreview = ({ questions, settings }) => {
     <div className={containerClass} style={{ minHeight: '1123px', padding: '10mm' }}>
       
       {/* Header Section */}
-      <div className={`mb-6 ${isClassic ? 'flex flex-col items-center text-center' : 'flex items-center gap-4 text-left border-b-2 border-gray-800 pb-4'}`}>
-        {settings.logo && (
-          <img src={settings.logo} alt="College Logo" className={`object-contain shrink-0 ${isClassic ? 'h-24 mb-4' : 'h-20'}`} />
-        )}
-        <div className={!isClassic ? 'flex-1' : ''}>
-          {settings.institutionName && (
-            <h1 className="text-xl font-bold uppercase mb-2">{settings.institutionName}</h1>
-          )}
-          {settings.examTitle && (
-            <h2 className="text-lg font-bold uppercase mb-2">{settings.examTitle}</h2>
-          )}
+      {isLgs ? (
+        <div className="mb-6 border border-black text-center font-serif text-[15px]">
+          <div className="grid grid-cols-[20%_60%_20%] border-b border-black">
+            <div className="flex flex-col items-center justify-center p-2 border-r border-black">
+              {settings.logo && <img src={settings.logo} className="w-16 h-16 object-contain mb-2" alt="Left Logo" />}
+              {settings.department && <div className="font-bold">{settings.department.toUpperCase()}</div>}
+            </div>
+            <div className="flex flex-col">
+              <div className="font-bold text-xl p-4 border-b border-black h-full flex items-center justify-center">
+                {settings.institutionName?.toUpperCase()}
+              </div>
+              <div className="grid grid-cols-2">
+                <div className="p-2 border-r border-black font-bold whitespace-pre-wrap flex flex-col justify-center items-center">
+                  {settings.examTitle && <div>{settings.examTitle.toUpperCase()}</div>}
+                  {settings.date && <div>DATE: {settings.date}</div>}
+                </div>
+                <div className="p-2 font-bold whitespace-pre-wrap flex items-center justify-center text-center">
+                  {settings.subject?.toUpperCase()}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center justify-center p-2 border-l border-black">
+              {settings.logo2 && <img src={settings.logo2} className="w-16 h-16 object-contain" alt="Right Logo" />}
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className={`mb-6 ${isClassic ? 'flex flex-col items-center text-center' : 'flex items-center gap-4 text-left border-b-2 border-gray-800 pb-4'}`}>
+            {settings.logo && (
+              <img src={settings.logo} alt="College Logo" className={`object-contain shrink-0 ${isClassic ? 'h-24 mb-4' : 'h-20'}`} />
+            )}
+            <div className={!isClassic ? 'flex-1' : ''}>
+              {settings.institutionName && (
+                <h1 className="text-xl font-bold uppercase mb-2">{settings.institutionName}</h1>
+              )}
+              {settings.examTitle && (
+                <h2 className="text-lg font-bold uppercase mb-2">{settings.examTitle}</h2>
+              )}
+            </div>
+          </div>
 
-      {/* Info Details */}
-      <div className={`flex justify-between items-end mb-4 text-[15px] ${!isClassic && 'bg-gray-50 p-4 rounded-sm border border-gray-200'}`}>
-        <div>
-          {settings.subject && <div className="mb-1"><span className="font-semibold">Subject:</span> {settings.subject}</div>}
-          {settings.duration && <div><span className="font-semibold">Duration:</span> {settings.duration}</div>}
-        </div>
-        <div className="text-right">
-          {settings.date && <div className="mb-1"><span className="font-semibold">Date:</span> {settings.date}</div>}
-          {settings.totalMarks && <div><span className="font-semibold">Total Marks:</span> {settings.totalMarks}</div>}
-        </div>
-      </div>
+          {/* Info Details */}
+          <div className={`flex justify-between items-end mb-4 text-[15px] ${!isClassic && 'bg-gray-50 p-4 rounded-sm border border-gray-200'}`}>
+            <div>
+              {settings.subject && <div className="mb-1"><span className="font-semibold">Subject:</span> {settings.subject}</div>}
+              {settings.duration && <div><span className="font-semibold">Duration:</span> {settings.duration}</div>}
+            </div>
+            <div className="text-right">
+              {settings.date && <div className="mb-1"><span className="font-semibold">Date:</span> {settings.date}</div>}
+              {settings.totalMarks && <div><span className="font-semibold">Total Marks:</span> {settings.totalMarks}</div>}
+            </div>
+          </div>
 
-      <div className="flex justify-between items-end mb-4 mt-6 text-[15px]">
-        <div>Name: _______________________________________</div>
-        <div>Register No: _________________________________</div>
-      </div>
+          <div className="flex justify-between items-end mb-4 mt-6 text-[15px]">
+            <div>Name: _______________________________________</div>
+            <div>Register No: _________________________________</div>
+          </div>
+        </>
+      )}
 
       <hr className="border-gray-400 mb-4" />
 
