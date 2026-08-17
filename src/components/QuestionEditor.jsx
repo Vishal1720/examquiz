@@ -6,7 +6,8 @@ export const QuestionEditor = ({ initialData, onSave, onCancel }) => {
       id: Date.now(),
       question: '',
       options: { A: '', B: '', C: '', D: '' },
-      answer: 'A'
+      answer: 'A',
+      optionsLayout: 'default'
     }
   );
 
@@ -70,6 +71,20 @@ export const QuestionEditor = ({ initialData, onSave, onCancel }) => {
           {['A', 'B', 'C', 'D'].map(opt => (
             <option key={opt} value={opt}>Option {opt}</option>
           ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Options Layout</label>
+        <select
+          value={formData.optionsLayout || 'default'}
+          onChange={(e) => handleChange('optionsLayout', e.target.value)}
+          className="w-full md:w-48 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-2 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
+        >
+          <option value="default">Default (From Settings)</option>
+          <option value="1-col">1 Column (Stacked)</option>
+          <option value="2-col">2 Columns (Side-by-side)</option>
+          <option value="4-col">4 Columns (Inline)</option>
         </select>
       </div>
 

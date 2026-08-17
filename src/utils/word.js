@@ -192,12 +192,10 @@ export const generateQuestionPaperWord = async (questions, settings) => {
     }));
   }
 
-  // Questions
-  const optLayout = settings.optionsLayout || '1-col';
-  const actualLayout = isCompact && optLayout === '4-col' ? '2-col' : optLayout;
-  const numCols = actualLayout === '4-col' ? 4 : actualLayout === '2-col' ? 2 : 1;
-
   questions.forEach((q, index) => {
+    const optLayout = q.optionsLayout && q.optionsLayout !== 'default' ? q.optionsLayout : (settings.optionsLayout || '1-col');
+    const actualLayout = isCompact && optLayout === '4-col' ? '2-col' : optLayout;
+    const numCols = actualLayout === '4-col' ? 4 : actualLayout === '2-col' ? 2 : 1;
     children.push(new Paragraph({
       children: [
         new TextRun({ text: `${index + 1}. ${q.question}` })

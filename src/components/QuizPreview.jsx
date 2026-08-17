@@ -62,8 +62,8 @@ export const QuizPreview = ({ questions, settings }) => {
             </div>
             
             <div className={`ml-6 mt-2 ${
-              settings.optionsLayout === '2-col' ? 'grid grid-cols-2 gap-2' :
-              settings.optionsLayout === '4-col' ? 'grid grid-cols-4 gap-2' :
+              (q.optionsLayout && q.optionsLayout !== 'default' ? q.optionsLayout : settings.optionsLayout) === '2-col' ? 'grid grid-cols-2 gap-2' :
+              (q.optionsLayout && q.optionsLayout !== 'default' ? q.optionsLayout : settings.optionsLayout) === '4-col' ? 'grid grid-cols-4 gap-2' :
               'space-y-2'
             }`}>
               {['A', 'B', 'C', 'D'].map(opt => (
