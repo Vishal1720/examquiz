@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Copy, Check, FileText } from 'lucide-react';
+import { Copy, Check, FileText, ExternalLink } from 'lucide-react';
 
-export const JnanaSudhaEndpoint = ({ onContinue, onBack }) => {
+export const LathaEndpoint = ({ onContinue, onBack }) => {
   const [copied, setCopied] = useState(false);
 
   const promptText = `Convert the uploaded Word (.docx) question paper into an Excel (.xlsx) file with exactly these columns:
@@ -250,10 +250,11 @@ Final response should only report:
 * Validation status
 * Download link`;
 
-  const copyPrompt = () => {
+  const copyAndOpenChatGPT = () => {
     navigator.clipboard.writeText(promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    window.open('https://chatgpt.com', '_blank');
   };
 
   return (
@@ -263,7 +264,7 @@ Final response should only report:
           <FileText className="w-8 h-8" />
         </div>
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
-          Convert JnanaSudha Word Format
+          Convert Maths LGS Word Format
         </h2>
         <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
           We use ChatGPT to convert your Word document into our supported Excel format while preserving all mathematical formulas correctly.
@@ -279,12 +280,12 @@ Final response should only report:
             Verify Your Format
           </h3>
           <p className="text-slate-600 dark:text-slate-400 mb-4">
-            Make sure your document matches the JnanaSudha format below (QUESTIONS and AK columns).
+            Make sure your document matches the format below (QUESTIONS and AK columns).
           </p>
           <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-center p-4">
             <img 
               src="/jnanasudhawordformat.png" 
-              alt="JnanaSudha Word Format Example" 
+              alt="Word Format Example" 
               className="max-w-full h-auto rounded-lg shadow-sm border border-slate-200 dark:border-slate-800"
               onError={(e) => {
                 e.target.style.display = 'none';
@@ -302,22 +303,46 @@ Final response should only report:
         <section>
           <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-sm flex items-center justify-center">2</span>
-            Copy the Prompt
+            Convert with ChatGPT
           </h3>
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
-            Copy the text below and paste it into ChatGPT, then upload your Word document there. ChatGPT will give you an Excel file.
+          <p className="text-slate-600 dark:text-slate-400 mb-6">
+            Click the button below to copy the required instructions and instantly open ChatGPT. Once there, just <strong className="text-slate-900 dark:text-white font-semibold">Paste (Ctrl+V)</strong> and upload your Word document!
           </p>
-          <div className="relative bg-slate-900 rounded-xl p-4 md:p-6 overflow-hidden border border-slate-800">
-            <button 
-              onClick={copyPrompt}
-              className="absolute top-4 right-4 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm transition-all flex items-center gap-2 text-sm font-semibold border border-white/10"
-            >
-              {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-              {copied ? 'Copied!' : 'Copy Prompt'}
-            </button>
-            <div className="h-64 overflow-y-auto text-sm text-slate-300 font-mono pr-4 scrollbar-thin">
-              <pre className="whitespace-pre-wrap font-sans">{promptText}</pre>
+          
+          <div className="relative bg-slate-900 rounded-xl p-4 md:p-6 overflow-hidden border border-slate-800 shadow-inner group mb-6">
+            <div className="flex justify-between items-center mb-4">
+               <span className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                 <FileText className="w-4 h-4" />
+                 Prompt Payload
+               </span>
             </div>
+            <div className="h-64 overflow-y-auto text-sm text-slate-300 font-mono pr-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+              <pre className="whitespace-pre-wrap font-sans opacity-70 group-hover:opacity-100 transition-opacity duration-300">{promptText}</pre>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <button 
+              onClick={copyAndOpenChatGPT}
+              className={`group relative overflow-hidden px-8 py-3.5 rounded-xl font-bold text-base transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-3 ${
+                copied 
+                  ? 'bg-emerald-500 text-white shadow-emerald-500/25' 
+                  : 'bg-slate-800 text-white hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 shadow-slate-900/10'
+              }`}
+            >
+              {copied ? (
+                <>
+                  <Check className="w-5 h-5 animate-in zoom-in" />
+                  <span>Copied! Opening ChatGPT...</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-5 h-5" />
+                  <span>Copy Prompt & Open ChatGPT</span>
+                  <ExternalLink className="w-4 h-4 ml-1 opacity-70" />
+                </>
+              )}
+            </button>
           </div>
         </section>
       </div>

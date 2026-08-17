@@ -8,7 +8,7 @@ import { PaperSettings } from './components/PaperSettings';
 import { QuizPreview } from './components/QuizPreview';
 import { DownloadButtons } from './components/DownloadButtons';
 import { AboutPage } from './components/AboutPage';
-import { JnanaSudhaEndpoint } from './components/JnanaSudhaEndpoint';
+import { LathaEndpoint } from './components/JnanaSudhaEndpoint';
 import { ScrollToTop } from './components/ScrollToTop';
 
 function App({ initialView }) {
@@ -156,7 +156,7 @@ function App({ initialView }) {
         {currentView === 'about' ? (
           <AboutPage onBack={() => navigateToView('app')} />
         ) : currentView === 'latha' ? (
-          <JnanaSudhaEndpoint 
+          <LathaEndpoint 
             onContinue={() => navigateTo(1, 'excel')}
             onBack={() => navigateToView('app')}
           />
