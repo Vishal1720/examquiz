@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const routesToPrerender = ['/', '/about', '/jnanasudha'];
+const routesToPrerender = ['/', '/about', '/latha'];
 
 async function prerender() {
   const template = fs.readFileSync(path.resolve(__dirname, 'dist/index.html'), 'utf-8');
@@ -21,7 +21,7 @@ async function prerender() {
         .replace(/<title>.*?<\/title>/, `<title>${pageTitle}</title>`)
         .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${pageTitle}" />`)
         .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${pageDesc}" />`);
-    } else if (url === '/jnanasudha') {
+    } else if (url === '/latha') {
       html = html.replace(/<meta name="robots" content=".*?" \/>/, `<meta name="robots" content="noindex, nofollow" />`);
     }
 

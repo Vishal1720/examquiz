@@ -21,7 +21,7 @@ function App({ initialView }) {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
       if (path === '/about') return 'about';
-      if (path === '/jnanasudha') return 'jnanasudha';
+      if (path === '/latha') return 'latha';
       return 'app';
     }
     return 'app';
@@ -61,8 +61,8 @@ function App({ initialView }) {
     if (typeof window === 'undefined') return;
 
     const path = window.location.pathname;
-    const initialView = path === '/about' ? 'about' : path === '/jnanasudha' ? 'jnanasudha' : 'app';
-    const initialPath = path === '/about' ? '/about' : path === '/jnanasudha' ? '/jnanasudha' : '/';
+    const initialView = path === '/about' ? 'about' : path === '/latha' ? 'latha' : 'app';
+    const initialPath = path === '/about' ? '/about' : path === '/latha' ? '/latha' : '/';
     window.history.replaceState({ step: 1, creationMethod: null, view: initialView }, '', initialPath);
 
     const handlePopState = (e) => {
@@ -108,7 +108,7 @@ function App({ initialView }) {
     setCurrentView(viewName);
     let path = '/';
     if (viewName === 'about') path = '/about';
-    if (viewName === 'jnanasudha') path = '/jnanasudha';
+    if (viewName === 'latha') path = '/latha';
     window.history.pushState({ step, creationMethod, view: viewName }, '', path);
   };
 
@@ -141,7 +141,7 @@ function App({ initialView }) {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-4 md:py-8 relative z-0">
         {currentView === 'about' ? (
           <AboutPage onBack={() => navigateToView('app')} />
-        ) : currentView === 'jnanasudha' ? (
+        ) : currentView === 'latha' ? (
           <JnanaSudhaEndpoint 
             onContinue={() => navigateTo(1, 'excel')}
             onBack={() => navigateToView('app')}
