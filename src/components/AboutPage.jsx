@@ -52,7 +52,7 @@ export const AboutPage = ({ onBack }) => {
                   <span className="px-3 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 text-xs font-bold rounded-full">Creator & Developer</span>
                 </div>
                 <p className="text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
-                  Passionate technologist and visionary behind VarSync. Believes in building technology that genuinely helps businesses grow and simplifies everyday problems.
+                  Creator of PaperQuizMaker and the developer behind VarSync. Focused on building simple, useful tools for educators and students.
                 </p>
                 <div className="flex gap-3">
                   <a href="https://www.linkedin.com/in/vishalshetty17/" target="_blank" rel="noopener noreferrer" className="p-2 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-[#0a66c2] border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-all hover:-translate-y-1">
